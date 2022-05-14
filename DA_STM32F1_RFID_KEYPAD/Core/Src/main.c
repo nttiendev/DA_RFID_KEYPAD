@@ -29,7 +29,6 @@
 #include "Flash.h"
 #include "stdio.h"
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -79,16 +78,14 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t p_none[PASS_WORD_LENGTH]={' ',' ',' ',' '};
+
 uint8_t i=0;  
 uint8_t key=0;
 uint8_t pass[PASS_WORD_LENGTH]={' ',' ',' ',' '};
 uint8_t pass1[PASS_WORD_LENGTH]={' ',' ',' ',' '};
+uint8_t p_none[PASS_WORD_LENGTH]={' ',' ',' ',' '};
 uint8_t str[5];
 uint8_t serNum[5];
-//uint8_t Key_Card[5]  = {0xA1, 0x23, 0x81, 0x1B, 0x18};
-//uint8_t Key_Card1[5] = {0xA0, 0x86, 0xD8, 0x3F, 0xC1};
-//uint8_t Key_Card2[5] = {0xE9, 0x30, 0x0E, 0x4D, 0x9A};
 mode_door mode = MODE_ENTERPASS;
 uint8_t flag_backup = 0;
 
@@ -108,7 +105,7 @@ void TT_enterPass(char key, uint8_t lengpass, uint8_t *pass, char *password, uin
     {
         lcd_gotoxy(1,1);
         lcd_puts("Watting 30s");
-        HAL_Delay(5000);
+        HAL_Delay(30000);
         lcd_gotoxy(1,1);
         lcd_puts("           ");
         lcd_gotoxy(1,0);
@@ -150,19 +147,20 @@ void TT_enterPass(char key, uint8_t lengpass, uint8_t *pass, char *password, uin
                 pass_flag = 0; //co bao nhap sai so lan mat khau
                 OPEN_DOOR();
 				HAL_GPIO_WritePin(led_GPIO_Port, led_Pin,GPIO_PIN_RESET); //chan relay cua
-//                HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin,GPIO_PIN_SET); //chan relay cua
-				lcd_gotoxy(1,0);
-				lcd_puts("Success!");
-				HAL_Delay(700);
+                HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin,GPIO_PIN_SET); //chan relay cua
+				lcd_gotoxy(1,2);
+				lcd_puts("--Unlock--");
+				HAL_Delay(200);
 				for(uint8_t j=0; j<lengpass; j++)
 				{
 					*(pass + j) = ' ';
 					*(pass1 + j) = ' ';//*****************************thua
 				}
-				lcd_gotoxy(1,0);
-				lcd_puts("        ");
-				HAL_GPIO_WritePin(led_GPIO_Port, led_Pin,GPIO_PIN_SET);
-//                HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin,GPIO_PIN_RESET); //chan relay cua
+                HAL_GPIO_WritePin(led_GPIO_Port, led_Pin,GPIO_PIN_SET);
+                HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin,GPIO_PIN_RESET); //chan relay cua
+                HAL_Delay(5000);
+				lcd_gotoxy(1,2);
+				lcd_puts("          ");
                 CLOSE_DOOR();
 			}
 			else
@@ -356,7 +354,7 @@ void TT_adminPass(uint8_t key, uint8_t lengpass, uint8_t *pass, char *pass_ad, u
                 lcd_gotoxy(0,0);
                 lcd_puts("ADMIN MENU: ");
                 lcd_gotoxy(1,0);
-                lcd_puts("A.add B.del C.change");
+                lcd_puts("Add Del Chan Bkp");
 			}
 			else
 			{
@@ -386,7 +384,7 @@ void TT_menu_admin(uint8_t key, mode_door *mode, uint8_t* flag_backup)
         lcd_gotoxy(1,0);
         lcd_puts("watting card...");
     }
-    else if(key == 'B')
+    else if(key == 'D')
     {
        *mode = MODE_DELERFID;
         lcd_clear();
@@ -406,11 +404,10 @@ void TT_menu_admin(uint8_t key, mode_door *mode, uint8_t* flag_backup)
         memcpy(pass1, p_none, 4);
         i = 0; 
     }
-    else if(key == 'D')
+    else if(key == 'B')
     {
         *mode = MODE_BACKUP_DATA;
         *flag_backup = 0;
-        HAL_Delay(1000);
     }     
 }
 
@@ -429,7 +426,7 @@ void TT_backup_data(uint8_t* flag_backup, mode_door* mode)
         lcd_puts("          ");
         lcd_gotoxy(1,0);
         lcd_puts("OK");
-        HAL_Delay(1000);
+        HAL_Delay(2000);
         *flag_backup = 1;
         *mode = MODE_ENTERPASS;
         lcd_clear();
@@ -455,7 +452,7 @@ void TT_add_rfid(rfid_store_t* rfid_store, mode_door* mode)
                 lcd_puts("               ");
                 lcd_gotoxy(1,0);
                 lcd_puts("0k");
-                HAL_Delay(1000);
+                HAL_Delay(2000);
                 lcd_clear();
                 lcd_gotoxy(0,0);
                 lcd_puts("DOOR PASSWORD");
@@ -469,7 +466,7 @@ void TT_add_rfid(rfid_store_t* rfid_store, mode_door* mode)
                 lcd_puts("               ");
                 lcd_gotoxy(1,0);
                 lcd_puts("already exist");
-                HAL_Delay(1000);  
+                HAL_Delay(2000);  
                 lcd_clear();
                 lcd_gotoxy(0,0);
                 lcd_puts("DOOR PASSWORD");
@@ -495,7 +492,7 @@ void TT_dele_rfid(rfid_store_t* rfid_store, mode_door* mode)
                 lcd_puts("               ");
                 lcd_gotoxy(1,0);
                 lcd_puts("0k");
-                HAL_Delay(1000);
+                HAL_Delay(2000);
                 lcd_clear();
                 lcd_gotoxy(0,0);
                 lcd_puts("DOOR PASSWORD");
@@ -509,7 +506,7 @@ void TT_dele_rfid(rfid_store_t* rfid_store, mode_door* mode)
                 lcd_puts("               ");
                 lcd_gotoxy(1,0);
                 lcd_puts("invalid");
-                HAL_Delay(1000);
+                HAL_Delay(2000);
                 lcd_clear();
                 lcd_gotoxy(0,0);
                 lcd_puts("DOOR PASSWORD");
@@ -528,10 +525,6 @@ void TT_dele_rfid(rfid_store_t* rfid_store, mode_door* mode)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
-//    memcpy(rfid_store.admin_pass, ADMIN_PASS_DEFAULT, PASS_WORD_LENGTH);
-//    memcpy(rfid_store.door_pass, DOOR_PASS_DEFAULT, PASS_WORD_LENGTH);
-//    rfid_add(Key_Card);
     rfid_restore_data();
   /* USER CODE END 1 */
 
@@ -558,19 +551,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	TM_MFRC522_Init();
 	lcd_init();
-    
     HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, GPIO_PIN_SET); //chan led
     HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin, GPIO_PIN_RESET); //chan loa
-	HAL_Delay(1000);
     lcd_clear();
     lcd_puts("DOOR PASSWORD");
 	lcd_gotoxy(1,0);
 
-
-//    Hal_FlashErase(addr_backup);
-//    Hal_FlashWrite_Array(addr_backup,(uint8_t *)&rfid_store, sizeof(rfid_store));
-
-//    Hal_FlashRead_Array(addr,(uint8_t *) &rfid_store_tien, sizeof(rfid_store));
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -610,15 +596,15 @@ int main(void)
                     {
                         OPEN_DOOR();
                         HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,GPIO_PIN_RESET);
-                //            HAL_GPIO_WritePin(loa_GPIO_Port,loa_Pin,GPIO_PIN_SET); //loa
-                        lcd_gotoxy(1,1);
-                        lcd_puts ("--MO CUA--");
-                        HAL_Delay(500);
-                        lcd_gotoxy(1,1);
-                        lcd_puts ("          ");
+                        HAL_GPIO_WritePin(loa_GPIO_Port,loa_Pin,GPIO_PIN_SET); //loa
+                        lcd_gotoxy(1,2);
+                        lcd_puts ("--Unlock--");
+                        HAL_Delay(200);
                         HAL_GPIO_WritePin(led_GPIO_Port,led_Pin,GPIO_PIN_SET);//led
-                //            HAL_GPIO_WritePin(loa_GPIO_Port,loa_Pin,GPIO_PIN_RESET);//loa
-                        HAL_Delay(1000); 
+                        HAL_GPIO_WritePin(loa_GPIO_Port,loa_Pin,GPIO_PIN_RESET);//loa
+                        HAL_Delay(5000); 
+                        lcd_gotoxy(1,2);
+                        lcd_puts ("           ");
                         CLOSE_DOOR();
                         memcpy(pass, p_none, 4);
                         memcpy(pass1, p_none, 4);
@@ -652,7 +638,7 @@ int main(void)
             break;
     }
 
-    HAL_Delay(50);
+    HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

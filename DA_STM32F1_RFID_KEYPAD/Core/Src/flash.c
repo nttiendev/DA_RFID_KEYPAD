@@ -1,105 +1,38 @@
-#include <flash.h>
+#include "Flash.h"
+#include "stm32f1xx.h"
 
-uint8_t lengthPage;
-
-void deleteBuffer(char* data)
+// Erase flash memorry
+void Hal_FlashErase(uint32_t Address)
 {
-	uint8_t len = strlen(data);
-	for(uint8_t i = 0; i < len; i++)
-	{
-		data[i] = 0;
-	}
+	HAL_FLASH_Unlock();
+	FLASH_EraseInitTypeDef Erase;
+	Erase.Banks = 1;
+	Erase.NbPages = 1;
+	Erase.PageAddress = Address;
+	Erase.TypeErase = FLASH_TYPEERASE_PAGES;
+	uint32_t PageError;
+	HAL_FLASHEx_Erase(&Erase,&PageError);
+	HAL_FLASH_Lock();
 }
-
-void Flash_Lock()
+// Write data of rray into flash memorry
+void Hal_FlashWrite_Array(uint32_t Address,uint8_t *Array, uint16_t length)
 {
+	HAL_FLASH_Unlock();
+	uint16_t *ptr = (uint16_t*)Array;
+	for(uint16_t i=0;i<(length+1)/2;i++)
+	{
+		HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, Address + 2*i, *ptr);
+		ptr++;
+	}
 	HAL_FLASH_Lock();
 }
 
-void Flash_Unlock()
+// Read data of rray from flash memorry
+void Hal_FlashRead_Array(uint32_t Address, uint8_t *Array, uint16_t length)
 {
-	HAL_FLASH_Unlock();
-}
-
-void Flash_Erase(uint32_t addr)
-{
-  while((FLASH->SR&FLASH_SR_BSY));
-  FLASH->CR |= FLASH_CR_PER; //Page Erase Set
-  FLASH->AR = addr; //Page Address
-  FLASH->CR |= FLASH_CR_STRT; //Start Page Erase
-  while((FLASH->SR&FLASH_SR_BSY));
-	FLASH->CR &= ~FLASH_SR_BSY;
-  FLASH->CR &= ~FLASH_CR_PER; //Page Erase Clear
-}
-
-void Flash_Write_Int(uint32_t addr, int data)
-{
-	Flash_Unlock();
-	FLASH->CR |= FLASH_CR_PG;				/*!< Programming */
-	while((FLASH->SR&FLASH_SR_BSY));
-	*(__IO uint16_t*)addr = data;
-	while((FLASH->SR&FLASH_SR_BSY));
-	FLASH->CR &= ~FLASH_CR_PG;
-	Flash_Lock();
-}
-
-uint16_t Flash_Read_Int(uint32_t addr)
-{
-	uint16_t* val = (uint16_t *)addr;
-	return *val;
-}
-
-void Flash_Write_Char(uint32_t addr, char* data)
-{
-	Flash_Unlock();
-	int i;
-  FLASH->CR |= FLASH_CR_PG;
-	int var = 0;
-	lengthPage = strlen(data);
-  for(i=0; i<lengthPage; i+=1)
-  {
-    while((FLASH->SR&FLASH_SR_BSY));
-		var = (int)data[i];
-    *(__IO uint16_t*)(addr + i*2) = var;
-  }
-	while((FLASH->SR&FLASH_SR_BSY)){};
-  FLASH->CR &= ~FLASH_CR_PG;
-  FLASH->CR |= FLASH_CR_LOCK;
-}
-
-void Flash_ReadChar(char* dataOut, uint32_t addr1, uint32_t addr2)
-{
-	int check = 0;
-	deleteBuffer(dataOut);
-	if((unsigned char)Flash_Read_Int(addr2+(uint32_t)2) == 255)
+	uint16_t *ptr = (uint16_t *)Array;
+	for(uint16_t i=0;i<(length+1)/2;i++)
 	{
-		check = (unsigned char)Flash_Read_Int(addr2)-48;
+		*ptr = *(__IO uint16_t*)(Address + 2*i);ptr++;
 	}
-	else
-	{
-		check = ((unsigned char)Flash_Read_Int(addr2)-48)*10 + (unsigned char)Flash_Read_Int(addr2+2)-48;
-	}
-	for(int i = 0; i < check; i++)
-	{
-		dataOut[i] = Flash_Read_Int(addr1 + (uint32_t)(i*2));
-	}
-}
-
-void Flash_ProgramPage(char* dataIn, uint32_t addr1, uint32_t addr2)
-{
-	//FLASH_Unlock
-	Flash_Unlock();
-	//Flash_Erase Page
-	Flash_Erase(addr1);
-	//FLASH_Program HalfWord
-	Flash_Write_Char(addr1,dataIn);
-	HAL_Delay(100);
-	char tempbuf[5] = {0};
-	sprintf(tempbuf,"%d",lengthPage);
-	//FLASH_Unlock
-	Flash_Unlock();
-	//Flash_Erase Page
-	Flash_Erase(addr2);
-	//FLASH_Program HalfWord
-	Flash_Write_Char(addr2,tempbuf);
 }

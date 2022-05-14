@@ -54,7 +54,6 @@
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern uint8_t mode;
-extern uint8_t flag_backup;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

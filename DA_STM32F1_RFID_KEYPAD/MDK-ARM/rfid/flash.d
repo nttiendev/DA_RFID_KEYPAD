@@ -1,5 +1,5 @@
-rfid\flash.o: ..\..\Flash\Flash.c
-rfid\flash.o: ..\..\Flash\Flash.h
+rfid\flash.o: ..\Core\Src\Flash.c
+rfid\flash.o: ../Core/Inc/Flash.h
 rfid\flash.o: C:\Program Files\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 rfid\flash.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h
 rfid\flash.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h

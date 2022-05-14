@@ -36,4 +36,3 @@ rfid\main.o: ../Core/Inc/Flash.h
 rfid\main.o: ../Core/Inc/rc522.h
 rfid\main.o: ../Core/Inc/lcd_txt.h
 rfid\main.o: ../Core/Inc/keypad_4x4.h
-rfid\main.o: C:\Program Files\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

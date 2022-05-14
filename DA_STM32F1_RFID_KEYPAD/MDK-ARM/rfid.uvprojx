@@ -487,7 +487,7 @@
             <File>
               <FileName>Flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Flash\Flash.c</FilePath>
+              <FilePath>..\Core\Src\Flash.c</FilePath>
             </File>
           </Files>
         </Group>

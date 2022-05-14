@@ -40,7 +40,6 @@ uint8_t rfid_delete(uint8_t *rfid)
 }
 
 void rfid_store_data(void){
-//    flash_write_data(FLASH_ADDRESS_START, (uint8_t *) &rfid_store, sizeof(rfid_store));
     Hal_FlashErase(addr_backup);
     Hal_FlashWrite_Array(addr_backup, (uint8_t *)&rfid_store, sizeof(rfid_store));
 }
