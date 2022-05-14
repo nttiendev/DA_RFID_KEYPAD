@@ -148,8 +148,8 @@ void TT_enterPass(char key, uint8_t lengpass, uint8_t *pass, char *password, uin
                 OPEN_DOOR();
 				HAL_GPIO_WritePin(led_GPIO_Port, led_Pin,GPIO_PIN_RESET); //chan relay cua
                 HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin,GPIO_PIN_SET); //chan relay cua
-				lcd_gotoxy(1,2);
-				lcd_puts("--Unlock--");
+				lcd_gotoxy(1,0);
+				lcd_puts("   --Unlock--");
 				HAL_Delay(200);
 				for(uint8_t j=0; j<lengpass; j++)
 				{
@@ -159,8 +159,8 @@ void TT_enterPass(char key, uint8_t lengpass, uint8_t *pass, char *password, uin
                 HAL_GPIO_WritePin(led_GPIO_Port, led_Pin,GPIO_PIN_SET);
                 HAL_GPIO_WritePin(loa_GPIO_Port, loa_Pin,GPIO_PIN_RESET); //chan relay cua
                 HAL_Delay(5000);
-				lcd_gotoxy(1,2);
-				lcd_puts("          ");
+				lcd_gotoxy(1,0);
+				lcd_puts("             ");
                 CLOSE_DOOR();
 			}
 			else
@@ -597,14 +597,14 @@ int main(void)
                         OPEN_DOOR();
                         HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,GPIO_PIN_RESET);
                         HAL_GPIO_WritePin(loa_GPIO_Port,loa_Pin,GPIO_PIN_SET); //loa
-                        lcd_gotoxy(1,2);
-                        lcd_puts ("--Unlock--");
+                        lcd_gotoxy(1,0);
+                        lcd_puts ("   --Unlock--");
                         HAL_Delay(200);
                         HAL_GPIO_WritePin(led_GPIO_Port,led_Pin,GPIO_PIN_SET);//led
                         HAL_GPIO_WritePin(loa_GPIO_Port,loa_Pin,GPIO_PIN_RESET);//loa
                         HAL_Delay(5000); 
-                        lcd_gotoxy(1,2);
-                        lcd_puts ("           ");
+                        lcd_gotoxy(1,0);
+                        lcd_puts ("              ");
                         CLOSE_DOOR();
                         memcpy(pass, p_none, 4);
                         memcpy(pass1, p_none, 4);
